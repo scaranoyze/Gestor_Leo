@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Bruno Leonis | Gestor Financeiro</title>
+  <link rel="icon" type="image/x-icon" href="favicon.ico">
+  <link rel="apple-touch-icon" href="apple-touch-icon.png">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar">
+      <div class="brand">
+        <div class="brand-mark">BL</div>
+        <div>
+          <strong>Bruno Leonis</strong>
+          <span>Gestor Financeiro</span>
+        </div>
+      </div>
+
+      <nav>
+        <button class="nav-item active" data-page="dashboard">Dashboard</button>
+        <button class="nav-item" data-page="movimentacoes">Movimentações</button>
+        <button class="nav-item" data-page="diario">Diário</button>
+        <button class="nav-item" data-page="mensal">Mensal</button>
+
+        <div class="nav-label">Receitas</div>
+        <button class="nav-item" data-page="salario">Salário</button>
+        <button class="nav-item" data-page="renda-extra">Renda extra</button>
+
+        <div class="nav-label">Despesas</div>
+        <button class="nav-item" data-page="contas-fixas">Contas fixas</button>
+        <button class="nav-item" data-page="assinaturas">Assinaturas</button>
+        <button class="nav-item" data-page="cartoes">Cartões</button>
+
+        <div class="nav-label">Planejamento</div>
+        <button class="nav-item" data-page="emprestimos">Empréstimos</button>
+        <button class="nav-item" data-page="investimentos">Investimentos</button>
+        <button class="nav-item" data-page="metas">Metas financeiras</button>
+        <button class="nav-item" data-page="categorias">Categorias</button>
+      </nav>
+    </aside>
+
+    <main class="content">
+      <header class="topbar">
+        <div>
+          <p class="eyebrow">Controle financeiro pessoal</p>
+          <h1 id="pageTitle">Dashboard</h1>
+        </div>
+        <button class="primary-btn" id="openTransaction">+ Novo lançamento</button>
+      </header>
+
+      <section class="page active" id="dashboard">
+        <div class="cards-grid">
+          <article class="metric-card">
+            <span>Saldo atual</span>
+            <strong id="saldoAtual">R$ 0,00</strong>
+          </article>
+          <article class="metric-card">
+            <span>Entradas do mês</span>
+            <strong id="entradasMes">R$ 0,00</strong>
+          </article>
+          <article class="metric-card">
+            <span>Saídas do mês</span>
+            <strong id="saidasMes">R$ 0,00</strong>
+          </article>
+          <article class="metric-card">
+            <span>Investimentos</span>
+            <strong id="totalInvestimentos">R$ 0,00</strong>
+          </article>
+        </div>
+
+        <div class="dashboard-grid">
+          <article class="panel chart-panel">
+            <div class="panel-header">
+              <div>
+                <span class="panel-kicker">Fluxo financeiro</span>
+                <h2>Entradas x saídas</h2>
+              </div>
+            </div>
+            <canvas id="cashflowChart"></canvas>
+          </article>
+
+          <article class="panel">
+            <div class="panel-header">
+              <div>
+                <span class="panel-kicker">Planejamento</span>
+                <h2>Meta financeira</h2>
+              </div>
+            </div>
+            <div id="goalCard"></div>
+          </article>
+
+          <article class="panel">
+            <div class="panel-header">
+              <div>
+                <span class="panel-kicker">Distribuição</span>
+                <h2>Gastos por categoria</h2>
+              </div>
+            </div>
+            <canvas id="categoryChart"></canvas>
+          </article>
+
+          <article class="panel">
+            <div class="panel-header">
+              <div>
+                <span class="panel-kicker">Próximos compromissos</span>
+                <h2>Contas e assinaturas</h2>
+              </div>
+            </div>
+            <div id="upcomingList" class="stack-list"></div>
+          </article>
+        </div>
+
+        <article class="panel">
+          <div class="panel-header">
+            <div>
+              <span class="panel-kicker">Últimos registros</span>
+              <h2>Movimentações recentes</h2>
+            </div>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Data</th>
+                  <th>Descrição</th>
+                  <th>Categoria</th>
+                  <th>Tipo</th>
+                  <th>Valor</th>
+                </tr>
+              </thead>
+              <tbody id="recentTable"></tbody>
+            </table>
+          </div>
+        </article>
+      </section>
+
+      <section class="page" id="movimentacoes">
+        <article class="panel">
+          <div class="panel-header">
+            <div>
+              <span class="panel-kicker">Histórico completo</span>
+              <h2>Movimentações</h2>
+            </div>
+            <button class="secondary-btn" id="openTransactionSecondary">Adicionar</button>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Data</th>
+                  <th>Descrição</th>
+                  <th>Categoria</th>
+                  <th>Tipo</th>
+                  <th>Valor</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody id="transactionsTable"></tbody>
+            </table>
+          </div>
+        </article>
+      </section>
+
+      <section class="page" id="diario">
+        <article class="panel">
+          <div class="panel-header">
+            <div>
+              <span class="panel-kicker">Hoje</span>
+              <h2>Resumo diário</h2>
+            </div>
+            <input type="date" id="dailyDate" class="control-input">
+          </div>
+          <div class="cards-grid compact">
+            <article class="metric-card"><span>Entradas</span><strong id="dailyIncome">R$ 0,00</strong></article>
+            <article class="metric-card"><span>Saídas</span><strong id="dailyExpense">R$ 0,00</strong></article>
+            <article class="metric-card"><span>Resultado</span><strong id="dailyBalance">R$ 0,00</strong></article>
+          </div>
+          <div id="dailyList" class="stack-list top-space"></div>
+        </article>
+      </section>
+
+      <section class="page" id="mensal">
+        <article class="panel">
+          <div class="panel-header">
+            <div>
+              <span class="panel-kicker">Fechamento</span>
+              <h2>Resumo mensal</h2>
+            </div>
+            <input type="month" id="monthlyDate" class="control-input">
+          </div>
+          <div class="cards-grid compact">
+            <article class="metric-card"><span>Entradas</span><strong id="monthlyIncome">R$ 0,00</strong></article>
+            <article class="metric-card"><span>Saídas</span><strong id="monthlyExpense">R$ 0,00</strong></article>
+            <article class="metric-card"><span>Resultado</span><strong id="monthlyBalance">R$ 0,00</strong></article>
+          </div>
+          <div id="monthlyCategories" class="summary-grid top-space"></div>
+        </article>
+      </section>
+
+      <section class="page" id="salario">
+        <article class="panel form-panel">
+          <div class="panel-header"><div><span class="panel-kicker">Receita principal</span><h2>Salário</h2></div></div>
+          <form id="salaryForm" class="inline-form">
+            <input class="control-input" type="number" step="0.01" id="salaryValue" placeholder="Valor do salário" required>
+            <input class="control-input" type="date" id="salaryDate" required>
+            <button class="primary-btn" type="submit">Registrar salário</button>
+          </form>
+        </article>
+      </section>
+
+      <section class="page" id="renda-extra">
+        <article class="panel form-panel">
+          <div class="panel-header"><div><span class="panel-kicker">Receitas adicionais</span><h2>Renda extra</h2></div></div>
+          <form id="extraIncomeForm" class="inline-form">
+            <input class="control-input" type="text" id="extraIncomeDescription" placeholder="Descrição" required>
+            <input class="control-input" type="number" step="0.01" id="extraIncomeValue" placeholder="Valor" required>
+            <input class="control-input" type="date" id="extraIncomeDate" required>
+            <button class="primary-btn" type="submit">Adicionar renda</button>
+          </form>
+        </article>
+      </section>
+
+      <section class="page" id="contas-fixas">
+        <article class="panel form-panel">
+          <div class="panel-header"><div><span class="panel-kicker">Recorrências</span><h2>Contas fixas</h2></div></div>
+          <form id="fixedBillForm" class="inline-form">
+            <input class="control-input" type="text" id="fixedBillName" placeholder="Ex.: Internet" required>
+            <input class="control-input" type="number" step="0.01" id="fixedBillValue" placeholder="Valor" required>
+            <input class="control-input" type="number" min="1" max="31" id="fixedBillDay" placeholder="Dia vencimento" required>
+            <button class="primary-btn" type="submit">Adicionar conta</button>
+          </form>
+          <div id="fixedBillList" class="stack-list top-space"></div>
+        </article>
+      </section>
+
+      <section class="page" id="assinaturas">
+        <article class="panel form-panel">
+          <div class="panel-header"><div><span class="panel-kicker">Serviços recorrentes</span><h2>Assinaturas</h2></div></div>
+          <form id="subscriptionForm" class="inline-form">
+            <input class="control-input" type="text" id="subscriptionName" placeholder="Ex.: Netflix" required>
+            <input class="control-input" type="number" step="0.01" id="subscriptionValue" placeholder="Valor" required>
+            <input class="control-input" type="number" min="1" max="31" id="subscriptionDay" placeholder="Dia cobrança" required>
+            <button class="primary-btn" type="submit">Adicionar assinatura</button>
+          </form>
+          <div id="subscriptionList" class="stack-list top-space"></div>
+        </article>
+      </section>
+
+      <section class="page" id="cartoes">
+        <article class="panel form-panel">
+          <div class="panel-header"><div><span class="panel-kicker">Crédito</span><h2>Cartões</h2></div></div>
+          <form id="cardForm" class="inline-form">
+            <input class="control-input" type="text" id="cardName" placeholder="Nome do cartão" required>
+            <input class="control-input" type="number" step="0.01" id="cardLimit" placeholder="Limite" required>
+            <input class="control-input" type="number" min="1" max="31" id="cardDueDay" placeholder="Vencimento" required>
+            <button class="primary-btn" type="submit">Adicionar cartão</button>
+          </form>
+          <div id="cardList" class="summary-grid top-space"></div>
+        </article>
+      </section>
+
+      <section class="page" id="emprestimos">
+        <article class="panel form-panel">
+          <div class="panel-header">
+            <div>
+              <span class="panel-kicker">Controle de dívidas</span>
+              <h2>Empréstimos / Dívidas</h2>
+            </div>
+          </div>
+
+          <form id="loanForm" class="loan-form-grid">
+            <input class="control-input" type="text" id="loanName" placeholder="Descrição da dívida" required>
+
+            <select class="control-input" id="loanType">
+              <option value="recebido">Empréstimo que eu peguei</option>
+              <option value="concedido">Dinheiro que eu emprestei</option>
+            </select>
+
+            <input class="control-input" type="number" step="0.01" id="loanOriginalValue" placeholder="Valor original recebido (ex.: 500,00)" required>
+
+            <input class="control-input" type="number" step="0.01" id="loanInstallmentValue" placeholder="Valor de cada parcela (ex.: 175,00)" required>
+
+            <input class="control-input" type="number" min="1" id="loanInstallments" placeholder="Quantidade de parcelas (ex.: 4)" required>
+
+            <input class="control-input" type="date" id="loanFirstDueDate" required>
+
+            <div class="loan-preview" id="loanPreview">
+              <div>
+                <span>Valor original</span>
+                <strong id="previewOriginal">R$ 0,00</strong>
+              </div>
+              <div>
+                <span>Total a pagar</span>
+                <strong id="previewTotal">R$ 0,00</strong>
+              </div>
+              <div>
+                <span>Juros / acréscimo</span>
+                <strong id="previewInterest">R$ 0,00</strong>
+              </div>
+            </div>
+
+            <button class="primary-btn" type="submit">Registrar dívida</button>
+          </form>
+
+          <div id="loanList" class="stack-list top-space"></div>
+        </article>
+      </section>
+
+      <section class="page" id="investimentos">
+        <article class="panel form-panel">
+          <div class="panel-header"><div><span class="panel-kicker">Patrimônio</span><h2>Investimentos</h2></div></div>
+          <form id="investmentForm" class="inline-form">
+            <input class="control-input" type="text" id="investmentName" placeholder="Ex.: CDB, Tesouro, Ações" required>
+            <input class="control-input" type="number" step="0.01" id="investmentValue" placeholder="Valor aplicado" required>
+            <input class="control-input" type="date" id="investmentDate" required>
+            <button class="primary-btn" type="submit">Adicionar investimento</button>
+          </form>
+          <div id="investmentList" class="stack-list top-space"></div>
+        </article>
+      </section>
+
+      <section class="page" id="metas">
+        <article class="panel form-panel">
+          <div class="panel-header"><div><span class="panel-kicker">Objetivos</span><h2>Metas financeiras</h2></div></div>
+          <form id="goalForm" class="inline-form">
+            <input class="control-input" type="text" id="goalName" placeholder="Nome da meta" required>
+            <input class="control-input" type="number" step="0.01" id="goalTarget" placeholder="Valor objetivo" required>
+            <input class="control-input" type="number" step="0.01" id="goalCurrent" placeholder="Valor acumulado" required>
+            <input class="control-input" type="date" id="goalDeadline" required>
+            <button class="primary-btn" type="submit">Salvar meta</button>
+          </form>
+          <div id="goalList" class="summary-grid top-space"></div>
+        </article>
+      </section>
+
+      <section class="page" id="categorias">
+        <article class="panel form-panel">
+          <div class="panel-header"><div><span class="panel-kicker">Organização</span><h2>Categorias</h2></div></div>
+          <form id="categoryForm" class="inline-form">
+            <input class="control-input" type="text" id="categoryName" placeholder="Nova categoria" required>
+            <button class="primary-btn" type="submit">Adicionar</button>
+          </form>
+          <div id="categoryList" class="chips top-space"></div>
+        </article>
+      </section>
+    </main>
+  </div>
+
+  <div class="modal-backdrop" id="transactionModal">
+    <div class="modal">
+      <div class="modal-header">
+        <div>
+          <span class="panel-kicker">Movimentação</span>
+          <h2>Novo lançamento</h2>
+        </div>
+        <button class="icon-btn" id="closeTransaction">×</button>
+      </div>
+      <form id="transactionForm" class="modal-form">
+        <label>Tipo
+          <select class="control-input" id="transactionType">
+            <option value="entrada">Entrada</option>
+            <option value="saida">Saída</option>
+          </select>
+        </label>
+        <label>Descrição
+          <input class="control-input" id="transactionDescription" required>
+        </label>
+        <label>Categoria
+          <select class="control-input" id="transactionCategory"></select>
+        </label>
+        <label>Valor
+          <input class="control-input" type="number" step="0.01" id="transactionValue" required>
+        </label>
+        <label>Data
+          <input class="control-input" type="date" id="transactionDate" required>
+        </label>
+        <label>Forma de pagamento
+          <select class="control-input" id="transactionPayment">
+            <option>Pix</option>
+            <option>Dinheiro</option>
+            <option>Cartão</option>
+            <option>Transferência</option>
+            <option>Boleto</option>
+          </select>
+        </label>
+        <label class="full-width">Observação
+          <textarea class="control-input" id="transactionNote" rows="3"></textarea>
+        </label>
+        <button class="primary-btn full-width" type="submit">Salvar lançamento</button>
+      </form>
+    </div>
+  </div>
+
+
+  <div class="modal-backdrop" id="goalActionModal">
+    <div class="modal goal-action-modal">
+      <div class="modal-header">
+        <div>
+          <span class="panel-kicker">Meta financeira</span>
+          <h2 id="goalActionTitle">Movimentar meta</h2>
+        </div>
+        <button class="icon-btn" id="closeGoalAction">×</button>
+      </div>
+
+      <div id="goalContributionArea">
+        <p class="goal-modal-note" id="goalSelectedInfo"></p>
+
+        <form id="goalContributionForm" class="modal-form">
+          <label>Valor
+            <input class="control-input" type="number" step="0.01" min="0.01" id="goalContributionValue" placeholder="Ex.: 50,00" required>
+          </label>
+
+          <label>Origem do valor
+            <select class="control-input" id="goalContributionSource">
+              <option value="manual">Adicionar valor à meta</option>
+              <option value="saldo">Usar saldo atual</option>
+            </select>
+          </label>
+
+          <label>Data
+            <input class="control-input" type="date" id="goalContributionDate" required>
+          </label>
+
+          <label>Observação
+            <input class="control-input" type="text" id="goalContributionNote" placeholder="Ex.: Aporte da semana">
+          </label>
+
+          <div class="goal-source-help full-width" id="goalSourceHelp">
+            Esta opção aumenta a meta sem alterar o saldo geral.
+          </div>
+
+          <button class="primary-btn full-width" type="submit">Confirmar valor</button>
+        </form>
+      </div>
+
+      <div id="goalEditArea" class="hidden">
+        <form id="goalEditForm" class="modal-form">
+          <label>Nome da meta
+            <input class="control-input" type="text" id="editGoalName" required>
+          </label>
+
+          <label>Valor objetivo
+            <input class="control-input" type="number" step="0.01" min="0.01" id="editGoalTarget" required>
+          </label>
+
+          <label>Prazo
+            <input class="control-input" type="date" id="editGoalDeadline" required>
+          </label>
+
+          <label>Valor acumulado
+            <input class="control-input" type="number" step="0.01" min="0" id="editGoalCurrent" required>
+          </label>
+
+          <button class="primary-btn full-width" type="submit">Salvar alterações</button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
